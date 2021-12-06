@@ -1,7 +1,7 @@
 import { readdirSync } from "fs";
 import path from "path";
 
-export default class ServiceLocator {
+export default class ServiceLocator <T extends string = string> {
     private services: {[name: string]: any} = {};
 
     constructor(folder: string) {
@@ -22,16 +22,18 @@ export default class ServiceLocator {
     }
 
 
-    public getService(name: string, singleton: boolean = false, options: object = {}): any {
+    public getService(name: T, singleton: boolean = false, options: object = {}): any {
+        const nameAsAny = name as any;
+
         if (singleton) {
             // If the service doesn't have a singleton instance, we'll create one for it
-            if (!this.services[name].singleton) {                
-                this.services[name].singleton = new this.services[name](options);
+            if (!this.services[nameAsAny].singleton) {                
+                this.services[nameAsAny].singleton = new this.services[nameAsAny](options);
             }
 
-            return this.services[name].singleton;
+            return this.services[nameAsAny].singleton;
         }
 
-        return new this.services[name](options);
+        return new this.services[nameAsAny](options);
     }
 }
